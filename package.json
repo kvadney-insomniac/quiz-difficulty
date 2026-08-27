@@ -1,6 +1,6 @@
 {
   "name": "quiz-difficulty",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Build easy/medium/hard option sets for multiple-choice questions from rings of candidate answers, deterministically and without accidentally making hard mode easier.",
   "keywords": [
     "quiz",
