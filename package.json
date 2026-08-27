@@ -11,7 +11,19 @@
     "spaced-repetition"
   ],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kvadney-insomniac/quiz-difficulty.git"
+  },
+  "homepage": "https://github.com/kvadney-insomniac/quiz-difficulty#readme",
+  "bugs": {
+    "url": "https://github.com/kvadney-insomniac/quiz-difficulty/issues"
+  },
   "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -28,7 +40,8 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "check": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "prepublishOnly": "npm run check && npm test && npm run build"
   },
   "devDependencies": {
     "@types/node": "^26.4.0",
