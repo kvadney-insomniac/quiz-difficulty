@@ -41,7 +41,8 @@
     "build": "tsc -p tsconfig.build.json",
     "check": "tsc --noEmit",
     "test": "vitest run",
-    "prepublishOnly": "npm run check && npm test && npm run build"
+    "prepublishOnly": "npm run check && npm test && npm run build",
+    "prepare": "npm run build"
   },
   "devDependencies": {
     "@types/node": "^26.4.0",
