@@ -4,7 +4,9 @@ export {
   layeredPool,
   ringsWithin,
   ringsBeyond,
+  defaultRingSeed,
   type Ring,
+  type RingSeed,
 } from './pools.js';
 export {
   buildOptions,

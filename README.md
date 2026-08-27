@@ -145,13 +145,35 @@ run dry while candidates still exist.
 |---|---|
 | `buildOptions({ answer, seed, tiers })` | Wrong options per tier, plus `borrowed` |
 | `optionsFor(sets, tier, answer, seed)` | Full option list, answer included, stably shuffled |
-| `pickAcrossRings(rings, answer, n, seed)` | Take from the tightest ring first, widening only for a shortfall |
+| `pickAcrossRings(rings, answer, n, seed, seedForRing?)` | Take from the tightest ring first, widening only for a shortfall |
 | `layeredPool(rings, answer, n)` | First ring that can supply `n`, else the widest seen |
 | `ringsWithin(items, label, distance, radii)` | Rings tightening inward |
 | `ringsBeyond(items, label, distance, radii)` | Rings widening outward |
 | `pickDistractors(pool, answer, n, seed)` | Seeded pick, answer excluded, deduped |
 | `seededShuffle(arr, seed)` | Deterministic Fisher-Yates |
+| `defaultRingSeed(seed, i)` | The default per-ring derivation, if you want to wrap it |
 | `hashString(s)` / `mulberry32(seed)` | The primitives, if you want them |
+
+## Adopting it into a bank that already exists
+
+If your options are already baked into content people have studied, the default
+seed derivation will reshuffle every wrong answer you have ever shown. That is
+not a bug, but it is a migration nobody asked for, and it lands on learners as
+"the answers moved".
+
+So pass `seedForRing` and reproduce whatever your bank already did:
+
+```ts
+buildOptions({
+  answer, seed, tiers,
+  // Whatever your prior implementation used. This one seeded its default tier
+  // from the bare question seed and suffixed the others.
+  seedForRing: (s) => (s.endsWith(':medium') ? s.slice(0, -':medium'.length) : s),
+});
+```
+
+Adopt byte-identically first, then drop the override on your own schedule when a
+reshuffle is something you can afford.
 
 ## What this is not
 

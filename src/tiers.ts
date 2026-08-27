@@ -10,7 +10,7 @@
  * So tiers are declared as an ordered list, easiest first, and `buildOptions`
  * will not return a set that breaks that order.
  */
-import { pickAcrossRings, type Ring } from './pools.js';
+import { pickAcrossRings, type Ring, type RingSeed } from './pools.js';
 import { pickDistractors, seededShuffle } from './rng.js';
 
 export interface Tier {
@@ -36,6 +36,12 @@ export interface BuildOptions {
   seed: string;
   /** Tiers, **easiest first**. The order is the contract. */
   tiers: readonly Tier[];
+  /**
+   * Override how each ring's shuffle seed is derived, when adopting this into a
+   * bank whose options are already baked into content people have studied. See
+   * `RingSeed` in ./pools. Leave unset for new banks.
+   */
+  seedForRing?: RingSeed;
 }
 
 export interface OptionSets {
@@ -67,7 +73,7 @@ export interface OptionSets {
  * this library exists to prevent. A tier that falls short borrows from the
  * pooled candidates of every tier rather than shipping a short card.
  */
-export function buildOptions({ answer, seed, tiers }: BuildOptions): OptionSets {
+export function buildOptions({ answer, seed, tiers, seedForRing }: BuildOptions): OptionSets {
   const distractors: Record<string, string[]> = {};
   const borrowed: string[] = [];
   const everything: string[] = [];
@@ -81,6 +87,7 @@ export function buildOptions({ answer, seed, tiers }: BuildOptions): OptionSets 
       answer,
       tier.wrongOptions,
       `${seed}:${tier.name}`,
+      seedForRing,
     );
     for (const ring of tier.rings) everything.push(...ring());
   }
