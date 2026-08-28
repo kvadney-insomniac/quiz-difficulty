@@ -1,7 +1,7 @@
 # quiz-difficulty
 
-Build easy/medium/hard options for multiple-choice questions — deterministically,
-and without accidentally making hard mode easier.
+Build easy/medium/hard options for multiple-choice questions. Deterministic, and
+guaranteed not to make hard mode easier.
 
 ```bash
 npm install quiz-difficulty
@@ -13,7 +13,7 @@ Most difficulty settings are one knob over one pool of wrong answers. That
 breaks in a specific and quiet way.
 
 Say your hardest tier draws its wrong options from as close to the answer as it
-can get. Good instinct — a wrong option is only doing work if it is *plausible*.
+can get. That is the right instinct. A wrong option is only doing work if it is *plausible*.
 "Which book is Leviticus 10 in?" offered against Colossians is not a hard
 question, it is a different subject: the wrong option eliminates itself and the
 question collapses to a guess among whatever is left.
@@ -72,7 +72,7 @@ const sets = buildOptions({
     {
       name: 'hard',
       wrongOptions: 5,
-      // Same group — the other alkali metals. You have to actually know it.
+      // Same group, the other alkali metals. You have to actually know it.
       // If that runs short, widen to the same period rather than short the card.
       rings: [
         () => ELEMENTS.filter((e) => e.group === of(answer).group).map((e) => e.name),
@@ -93,8 +93,8 @@ optionsFor(sets, 'hard', answer, 'q:alkali-metal-lamp');
 ```
 
 `sets.borrowed` names any tier that could not fill itself from its own rings and
-had to widen to stay in order. That is not an error — widening is the correct
-repair — but it tells you the subject matter is thinner around that answer than
+had to widen to stay in order. That is not an error, widening is the correct
+repair, but it tells you the subject matter is thinner around that answer than
 the tier assumed, which is exactly what you want to know when tuning rings.
 
 ## What it guarantees
@@ -106,14 +106,14 @@ short card.
 **Options are deterministic.** Every choice is a pure function of the seed you
 supply. Same seed, same options, forever.
 
-That second one matters more than it sounds. Question banks get regenerated — a
-data file changes, the build runs again — and if the wrong options moved each
-time, anything keyed to a question comes unstuck: a spaced-repetition schedule,
-a record of what someone got wrong, a cached render. Seed with something stable
-about the question, never with the clock.
+That second one matters more than it sounds. Question banks get regenerated
+whenever a data file changes and the build runs again. If the wrong options
+moved each time, anything keyed to a question would come unstuck: a
+spaced-repetition schedule, a record of what someone got wrong, a cached render.
+Seed with something stable about the question, never with the clock.
 
 **The answer never appears among its own distractors**, and duplicates are
-collapsed — two identical wrong options read as a bug and quietly cost the
+collapsed. Two identical wrong options read as a bug, and they quietly cost the
 question a distinct choice.
 
 ## Rings from a distance function
@@ -132,7 +132,7 @@ const hardRings = ringsWithin(CAPITALS, (c) => c.name, distance, [5, 15]);
 const easyRings = ringsBeyond(CAPITALS, (c) => c.name, distance, [40, 20]);
 ```
 
-Distance is whatever your subject makes it — position in an ordered corpus,
+Distance is whatever your subject makes it, position in an ordered corpus,
 taxonomic depth, year, category nesting, edit distance. The library has no
 opinion, which is the point.
 
@@ -177,7 +177,7 @@ reshuffle is something you can afford.
 
 ## What this is not
 
-Not a question generator — you bring the candidates. Not a scheduler; pair it
+Not a question generator, you bring the candidates. Not a scheduler; pair it
 with an SRS if you need one. It has no opinion about how you store questions,
 and no runtime dependencies.
 
@@ -187,7 +187,7 @@ Extracted from a Bible-survey trainer where the difficulty setting was found to
 be doing almost nothing: two thirds of a 6,000-question bank carried no
 alternate option sets at all and silently fell back to the default, so the
 "hard" setting went on offering New Testament options against Old Testament
-questions — 637 of them, measured. Fixing that surfaced the inversion problem
+questions, 637 of them, measured. Fixing that surfaced the inversion problem
 twice, in different question families, which is what convinced me the guarantee
 belonged in a library rather than in a code review checklist.
 

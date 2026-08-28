@@ -73,7 +73,7 @@ describe('seededShuffle', () => {
   });
 
   it('is a permutation: nothing lost, duplicated or invented', () => {
-    // Duplicates included on purpose — a shuffle that quietly deduped would
+    // Duplicates included on purpose, a shuffle that quietly deduped would
     // cost the card a choice, which is the same failure as a pool that cannot
     // fill it.
     const withDupes = ['a', 'a', 'b', 'b', 'b', 'c'];

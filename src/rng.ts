@@ -3,9 +3,10 @@
  *
  * Every choice this library makes is a pure function of a seed you supply, and
  * that is load-bearing rather than tidy. Question banks are usually regenerated
- * — a data file changes, the build runs again — and if the wrong options moved
- * each time, anything keyed to a question would come unstuck: a spaced
- * repetition schedule, a record of what someone got wrong, a cached render.
+ * whenever a data file changes and the build runs again. If the wrong options
+ * moved each time, anything keyed to a question would come unstuck: a
+ * spaced-repetition schedule, a record of what someone got wrong, a cached
+ * render.
  *
  * Seed with something stable about the question, not with the clock.
  */
@@ -20,7 +21,7 @@ export function hashString(s: string): number {
   return h >>> 0;
 }
 
-/** mulberry32 — a small, well-distributed PRNG with a 32-bit state. */
+/** mulberry32: a small, well-distributed PRNG with a 32-bit state. */
 export function mulberry32(seed: number): () => number {
   let a = seed;
   return () => {
@@ -50,7 +51,7 @@ export function seededShuffle<T>(arr: readonly T[], seed: string): T[] {
  * Take `n` options from `pool`, never the answer itself, deterministically.
  *
  * Duplicates are collapsed first: two rings often overlap, and the same string
- * appearing twice would render as two identical wrong options — which reads as
+ * appearing twice would render as two identical wrong options, which reads as
  * a bug to whoever is answering, and quietly makes the question easier by
  * costing it a distinct choice.
  */
