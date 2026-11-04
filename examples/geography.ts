@@ -10,14 +10,10 @@
  * So the rings are drawn by region: neighbours first, then the rest of the
  * continent, then the world.
  *
- * Run it with `npx vitest run` (test/example.test.ts imports it) or directly
- * with `npx vite-node examples/geography.ts`.
+ * Run it with `npm run example`, which executes test/example.test.ts; that
+ * file imports this one, so the questions print alongside the test results.
  */
 import { buildOptions, optionsFor, ringsWithin, type Ring } from '../src/index.js';
-
-// The package ships zero dependencies and `lib` is ES2022 only, so there is no
-// ambient `console`. Declaring it here keeps the example printable without
-// pulling @types/node into a library that does not otherwise need it.
 
 interface Capital {
   city: string;
