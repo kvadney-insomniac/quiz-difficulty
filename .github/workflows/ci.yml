@@ -9,6 +9,20 @@ permissions:
   contents: read
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      # ESLint plus the em/en dash check.
+      - run: npm run lint
+      # package.json, package-lock.json and CHANGELOG.md must name one version.
+      - run: npm run check-version
+
   test:
     runs-on: ubuntu-latest
     strategy:

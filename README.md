@@ -3,9 +3,28 @@
 Build easy/medium/hard options for multiple-choice questions. Deterministic, and
 guaranteed not to make hard mode easier.
 
+## Install
+
 ```bash
 npm install quiz-difficulty
 ```
+
+Requirements: Node 18 or later, as declared in `engines` in `package.json`.
+The package is ES modules only, ships its own TypeScript declarations, and has
+no runtime dependencies. Nothing in `src/` touches a Node API, so it runs
+unchanged in a browser bundle.
+
+To try it from a clone instead:
+
+```bash
+git clone https://github.com/kvadney-insomniac/quiz-difficulty.git
+cd quiz-difficulty
+npm ci
+npm run example
+```
+
+`npm run example` runs `examples/geography.ts` through the test runner and
+prints three tiers of "What is the capital of Kenya?".
 
 ## The problem
 
@@ -26,10 +45,13 @@ symptom is that people score better on hard.
 
 This library exists to make that impossible.
 
-## The model
+## A two-minute example
 
 Describe your candidates as **rings** around the answer, tightest first. Declare
 your **tiers** easiest first. The library does the rest.
+
+The example below is executed by the test suite (`test/readme.test.ts`), so the
+printed output is pinned rather than hoped for.
 
 ```ts
 import { buildOptions, optionsFor } from 'quiz-difficulty';
@@ -180,6 +202,79 @@ reshuffle is something you can afford.
 Not a question generator, you bring the candidates. Not a scheduler; pair it
 with an SRS if you need one. It has no opinion about how you store questions,
 and no runtime dependencies.
+
+## FAQ
+
+**My hard tier shows an option from a wider ring. Is that a bug?**
+No. A tier takes everything it can from its tightest ring and tops up from the
+next one out. The alternative, drawing the whole card from the wider ring, is
+what makes the hard question easy, because it discards the close candidates
+exactly when they are scarce. If you would rather know when it happens, it is
+reported only when a tier's *entire* chain runs dry: see the next question.
+
+**What does `borrowed` mean, and should I treat it as an error?**
+`sets.borrowed` lists tiers whose whole chain of rings could not fill them, so
+they drew from the pooled candidates of every tier to keep the ordering
+guarantee. It is a signal about your data, not a failure: the subject is
+thinner around that answer than the tier assumed. Widening *within* a chain is
+not reported, because that is the chain working as designed.
+
+**Why do I get the same options every time?**
+By design. Every choice is a pure function of the `seed` you pass. Change the
+seed and the options change; keep it and they stay put across rebuilds, which
+is what keeps a spaced-repetition schedule or a cached render attached to its
+question. Seed with something stable about the question, never the clock.
+
+**I have an existing question bank. Will adopting this reshuffle my options?**
+Only if you let it. Pass `seedForRing` to reproduce the derivation your bank
+already used and the output is byte-identical; drop the override later when a
+reshuffle is something you can afford. See "Adopting it into a bank that
+already exists" above.
+
+**Can I use it from CommonJS?**
+The package is ES modules only. Node 20.19 and 22.12 or later can `require()`
+an ES module directly, per the
+[Node.js modules documentation](https://nodejs.org/api/modules.html#loading-ecmascript-modules-using-require).
+On Node 18, use `import()` from CommonJS instead.
+
+**Which random number generator does it use, and is it cryptographic?**
+Seeds are hashed with
+[FNV-1a](http://www.isthe.com/chongo/tech/comp/fnv/) and the hash drives
+[mulberry32](https://github.com/bryc/code/blob/master/jshash/PRNGs.md#mulberry32),
+a 32-bit PRNG, through a Fisher-Yates shuffle. Neither is cryptographic and
+neither needs to be: the goal is a stable, well-spread shuffle, not secrecy.
+Both are exported (`hashString`, `mulberry32`) if you want them.
+
+**Does `wrongOptions` include the answer?**
+No. It is the number of wrong options alongside the answer, so a tier with
+`wrongOptions: 3` renders a four-choice card from `optionsFor`.
+
+**What if a ring returns duplicates, empty strings, or the answer itself?**
+All three are dropped before anything is counted. Two identical wrong options
+read as a bug, and the answer can never appear among its own distractors.
+
+**Does the package have runtime dependencies?**
+None. `dist/` imports nothing outside itself; the dev dependencies are
+TypeScript, vitest and ESLint.
+
+**How do I run the checks locally?**
+
+```bash
+npm run check          # typecheck
+npm run lint           # ESLint, plus a check that no em or en dash crept in
+npm test               # vitest
+npm run check-version  # package.json, package-lock.json and CHANGELOG.md agree
+npm run build          # emit dist/
+```
+
+## Releases
+
+Versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html) and
+every release is recorded in [CHANGELOG.md](./CHANGELOG.md). A release is a
+`v<version>` tag on `main`; the `release` workflow verifies the tag matches
+`package.json` and the changelog, runs every check, and creates a GitHub
+Release with the changelog section as its notes and the packed tarball
+attached. Publishing to npm is a separate manual step.
 
 ## Provenance
 
